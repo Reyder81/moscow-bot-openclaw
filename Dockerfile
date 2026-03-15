@@ -1,17 +1,15 @@
-# Используем легковесный образ Node.js
 FROM node:20-slim
-
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Устанавливаем системные зависимости
-RUN apt-get update && apt-get install -y curl bash git bsdutils
+# Устанавливаем зависимости
+RUN apt-get update && apt-get install -y curl bash git
 
-# "yes |" автоматически отвечает "y" (Yes) на любые вопросы установщика,
-# а 'script' имитирует терминал, чтобы обойти ошибку /dev/tty
-RUN script -q -c "yes | curl -fsSL https://openclaw.ai/install.sh | bash -s -- --non-interactive" /dev/null
+# Скачиваем скрипт, но не запускаем его сразу, а правим, чтобы он не просил "Yes"
+RUN curl -fsSL https://openclaw.ai/install.sh -o install.sh && \
+    sed -i 's/read -p/echo "y" | read -p/g' install.sh && \
+    bash install.sh --non-interactive
 
-# Настройка путей, чтобы команда 'openclaw' была доступна системе
+# Настройка путей
 ENV PATH="/root/.local/bin:${PATH}"
 
 # Запуск бота
