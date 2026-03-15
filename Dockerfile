@@ -1,15 +1,14 @@
 FROM node:20-slim
 WORKDIR /app
 
-# Устанавливаем зависимости
+# Устанавливаем системные зависимости
 RUN apt-get update && apt-get install -y curl bash git
 
-# Устанавливаем OpenClaw
-RUN curl -fsSL https://openclaw.ai/install.sh | bash
+# Устанавливаем OpenClaw в неинтерактивном режиме
+RUN curl -fsSL https://openclaw.ai/install.sh | bash -s -- --non-interactive
 
-# Важно: добавляем переменные окружения и пути
+# Настройка путей
 ENV PATH="/root/.local/bin:${PATH}"
 
-# Создаем скрипт-обертку, чтобы бот не падал
-# И используем 'tail -f /dev/null' для поддержания контейнера запущенным, если процесс умрет
-CMD ["/bin/bash", "-c", "openclaw start"]
+# Запуск бота
+CMD ["openclaw", "start"]
